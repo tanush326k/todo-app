@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f3ed">
+  <title>Daybook - a little more done</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f3ed;
+      --ink: #252b27;
+      --muted: #788078;
+      --line: #dedfd6;
+      --green: #28634f;
+      --green-dark: #1d4c3c;
+      --coral: #bb624b;
+      --white: #fffefa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(#d9ddd2 0.65px, transparent 0.65px);
+      background-size: 16px 16px;
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    }
+
+    button, input { font: inherit; }
+
+    .page {
+      width: min(100% - 40px, 680px);
+      margin: 0 auto;
+      padding: 54px 0 72px;
+      animation: arrive 420ms ease-out both;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .mark {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--white);
+      background: var(--green);
+      font-family: sans-serif;
+      font-size: 16px;
+    }
+
+    .local-note {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0;
+    }
+
+    .intro { padding: 48px 0 30px; }
+
+    .eyebrow {
+      margin: 0 0 11px;
+      color: var(--coral);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 50px;
+      font-weight: 400;
+      line-height: 1.08;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .entry-form {
+      display: flex;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--white);
+      box-shadow: 0 5px 18px #252b270a;
+    }
+
+    .entry-form input {
+      flex: 1;
+      min-width: 0;
+      padding: 11px 12px;
+      border: 0;
+      outline: 0;
+      color: var(--ink);
+      background: transparent;
+      font-size: 15px;
+    }
+
+    .entry-form input::placeholder { color: #a0a59d; }
+
+    .entry-form:focus-within {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px #28634f1a;
+    }
+
+    .add-button {
+      min-height: 42px;
+      padding: 0 19px;
+      border: 0;
+      border-radius: 4px;
+      color: white;
+      background: var(--green);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 650;
+      transition: background 140ms ease, transform 140ms ease;
+    }
+
+    .add-button:hover { background: var(--green-dark); }
+    .add-button:active { transform: scale(0.98); }
+
+    .list-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 35px;
+      padding-bottom: 13px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .count {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 3px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ebece5;
+    }
+
+    .filter-button {
+      padding: 6px 10px;
+      border: 0;
+      border-radius: 4px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .filter-button[aria-pressed="true"] {
+      color: var(--ink);
+      background: var(--white);
+      box-shadow: 0 1px 3px #252b2714;
+    }
+
+    .todo-list { margin: 0; padding: 0; list-style: none; }
+
+    .todo-item {
+      display: flex;
+      min-height: 62px;
+      align-items: center;
+      gap: 13px;
+      border-bottom: 1px solid var(--line);
+      animation: arrive 180ms ease-out both;
+    }
+
+    .todo-check {
+      width: 19px;
+      height: 19px;
+      flex: 0 0 19px;
+      margin: 0;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+
+    .todo-text {
+      flex: 1;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-size: 15px;
+    }
+
+    .todo-item.is-complete .todo-text {
+      color: #989e96;
+      text-decoration: line-through;
+      text-decoration-color: #aeb3aa;
+    }
+
+    .delete-button, .clear-button {
+      padding: 7px 4px;
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .delete-button { opacity: 0; transition: opacity 140ms ease, color 140ms ease; }
+    .todo-item:hover .delete-button, .delete-button:focus-visible { opacity: 1; }
+    .delete-button:hover, .clear-button:hover { color: var(--coral); }
+    .clear-button { color: var(--coral); }
+
+    .empty-state {
+      padding: 42px 16px;
+      color: var(--muted);
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 18px;
+    }
+
+    .empty-state[hidden], .clear-button[hidden] { display: none; }
+
+    .list-footer {
+      display: flex;
+      min-height: 36px;
+      justify-content: flex-end;
+      padding-top: 10px;
+    }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .page { width: min(100% - 28px, 680px); padding-top: 28px; }
+      .intro { padding-top: 38px; }
+      h1 { font-size: 40px; }
+      .local-note { font-size: 11px; }
+      .list-heading { align-items: flex-start; flex-direction: column; }
+      .filter-button { padding-inline: 12px; }
+      .delete-button { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <div class="wordmark"><span class="mark" aria-hidden="true">&#10003;</span> daybook</div>
+      <span class="local-note">Just for you &middot; saved on this device</span>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">A fresh page</p>
+      <h1 id="page-title">Make room<br>for what matters.</h1>
+      <p class="subtitle">One thing at a time is a fine way to begin.</p>
+    </section>
+
+    <form class="entry-form" id="todo-form">
+      <input id="todo-input" type="text" maxlength="200" placeholder="What would you like to get done?" aria-label="New task" autocomplete="off" required>
+      <button class="add-button" type="submit">Add task</button>
+    </form>
+
+    <section aria-label="Your tasks">
+      <div class="list-heading">
+        <p class="count" id="task-count" aria-live="polite"></p>
+        <div class="filters" role="group" aria-label="Filter tasks">
+          <button class="filter-button" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-button" type="button" data-filter="active" aria-pressed="false">To do</button>
+          <button class="filter-button" type="button" data-filter="completed" aria-pressed="false">Done</button>
+        </div>
+      </div>
+      <ul class="todo-list" id="todo-list"></ul>
+      <p class="empty-state" id="empty-state" hidden></p>
+      <div class="list-footer">
+        <button class="clear-button" id="clear-completed" type="button" hidden>Clear completed</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "daybook.todos.v1";
+    const form = document.querySelector("#todo-form");
+    const input = document.querySelector("#todo-input");
+    const list = document.querySelector("#todo-list");
+    const count = document.querySelector("#task-count");
+    const emptyState = document.querySelector("#empty-state");
+    const clearCompletedButton = document.querySelector("#clear-completed");
+    const filterButtons = document.querySelectorAll("[data-filter]");
+    let filter = "all";
+    let todos = loadTodos();
+
+    function loadTodos() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(saved)
+          ? saved.filter((todo) => todo && typeof todo.id === "string" && typeof todo.text === "string" && typeof todo.completed === "boolean")
+          : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveTodos() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+    }
+
+    function render() {
+      const remaining = todos.filter((todo) => !todo.completed).length;
+      count.textContent = `${remaining} ${remaining === 1 ? "task" : "tasks"} left`;
+      list.replaceChildren();
+
+      const visibleTodos = todos.filter((todo) => {
+        if (filter === "active") return !todo.completed;
+        if (filter === "completed") return todo.completed;
+        return true;
+      });
+
+      for (const todo of visibleTodos) {
+        const item = document.createElement("li");
+        item.className = `todo-item${todo.completed ? " is-complete" : ""}`;
+
+        const checkbox = document.createElement("input");
+        checkbox.className = "todo-check";
+        checkbox.type = "checkbox";
+        checkbox.checked = todo.completed;
+        checkbox.setAttribute("aria-label", `Mark ${todo.text} ${todo.completed ? "to do" : "done"}`);
+        checkbox.addEventListener("change", () => {
+          todo.completed = checkbox.checked;
+          saveTodos();
+          render();
+        });
+
+        const text = document.createElement("span");
+        text.className = "todo-text";
+        text.textContent = todo.text;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete-button";
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
+        deleteButton.setAttribute("aria-label", `Delete ${todo.text}`);
+        deleteButton.addEventListener("click", () => {
+          todos = todos.filter((item) => item.id !== todo.id);
+          saveTodos();
+          render();
+        });
+
+        item.append(checkbox, text, deleteButton);
+        list.append(item);
+      }
+
+      emptyState.hidden = visibleTodos.length > 0;
+      emptyState.textContent = todos.length === 0
+        ? "A little space for your first task."
+        : filter === "active"
+          ? "All caught up. Nothing left to do."
+          : "Nothing completed just yet.";
+      clearCompletedButton.hidden = !todos.some((todo) => todo.completed);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      todos.unshift({ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, text, completed: false });
+      saveTodos();
+      input.value = "";
+      filter = "all";
+      filterButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.filter === filter)));
+      render();
+      input.focus();
+    });
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        filter = button.dataset.filter;
+        filterButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+        render();
+      });
+    });
+
+    clearCompletedButton.addEventListener("click", () => {
+      todos = todos.filter((todo) => !todo.completed);
+      saveTodos();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
